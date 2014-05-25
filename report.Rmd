@@ -60,7 +60,7 @@ storm.data[grepl("frost", storm.data$EVTYPE, ignore.case=T), ]$EVTYPE <- "FROST"
 storm.data$EVTYPE <- as.factor(storm.data$EVTYPE)
 ```
 
-Key metrics are summarized by event type.
+A summary of the total number of fatalities and injuries, and a combined total, by event type is arranged by combined total in descending order.
 
 ```{r cache=TRUE}
 summary.fatalities <- ddply(storm.data, .(EVTYPE), summarize, total.fatalities=sum(FATALITIES))
@@ -77,7 +77,7 @@ summary.total <- subset(summary.total, total > 0)
 by.total <- arrange(summary.total, desc(total))
 ```
 
-Estimated costs for property and crop damage are each stored in two columns. The first is the amount, and the second is the unit such as "K" for thousands of dollars, "M" for millions, etc. If the unit column is empty or contains an unknown value, then a unit of 1 has been assumed. The following code normalizes the costs.
+Estimated costs for property and crop damage are each stored in two columns. The first is the amount, and the second is the unit such as "K" for thousands of dollars, "M" for millions, etc. If the unit column is empty or contains an unknown value, then a unit of 1 has been assumed. The following code normalizes the costs. A summary of the total estimated cost of property and crop damage, and a combined total, by event type is arranged by combined total in descending order.
 
 ```{r cache=TRUE}
 m <- c("H"=100, "K"=1000, "M"=1000000, "B"=1000000000, "N"=1)
@@ -117,7 +117,7 @@ ggplot(top10, aes(total.fatalities, total.injuries)) +
 
 <a name="top10health"></a>
 
-```{r cache=TRUE, echo=FALSE, results='asis'}
+```{r cache=TRUE, results='asis'}
 kable(head(by.total, 10))
 ```
 
@@ -161,6 +161,6 @@ ggplot(top10, aes(reorder(EVTYPE, total.cost), total.cost)) +
   geom_bar(stat="identity", fill="steelblue")
 ```
 
-```{r cache=TRUE, echo=FALSE, results='asis'}
+```{r cache=TRUE, results='asis'}
 kable(head(by.total.cost, 10))
 ```

@@ -68,7 +68,7 @@ storm.data$EVTYPE <- as.factor(storm.data$EVTYPE)
 ```
 
 
-Key metrics are summarized by event type.
+A summary of the total number of fatalities and injuries, and a combined total, by event type is arranged by combined total in descending order.
 
 
 ```r
@@ -88,7 +88,7 @@ by.total <- arrange(summary.total, desc(total))
 ```
 
 
-Estimated costs for property and crop damage are each stored in two columns. The first is the amount, and the second is the unit such as "K" for thousands of dollars, "M" for millions, etc. If the unit column is empty or contains an unknown value, then a unit of 1 has been assumed. The following code normalizes the costs.
+Estimated costs for property and crop damage are each stored in two columns. The first is the amount, and the second is the unit such as "K" for thousands of dollars, "M" for millions, etc. If the unit column is empty or contains an unknown value, then a unit of 1 has been assumed. The following code normalizes the costs. A summary of the total estimated cost of property and crop damage, and a combined total, by event type is arranged by combined total in descending order.
 
 
 ```r
@@ -129,6 +129,11 @@ ggplot(top10, aes(total.fatalities, total.injuries)) + xlab("Number fatalities")
 - Axes are shown on a log[10] scale.
 
 <a name="top10health"></a>
+
+
+```r
+kable(head(by.total, 10))
+```
 
 |EVTYPE        |  total.fatalities|  total.injuries|  total|
 |:-------------|-----------------:|---------------:|------:|
@@ -188,6 +193,11 @@ ggplot(top10, aes(reorder(EVTYPE, total.cost), total.cost)) + xlab("Event type")
 
 ![plot of chunk top_10_damage](figure/top_10_damage.png) 
 
+
+
+```r
+kable(head(by.total.cost, 10))
+```
 
 |EVTYPE          |  total.property|  total.crop|  total.cost|
 |:---------------|---------------:|-----------:|-----------:|
