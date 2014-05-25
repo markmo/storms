@@ -10,13 +10,9 @@ This research set out to answer:
 
 1. Which types of severe weather events have the greatest economic consequences in the US.
 
-The research used data from the U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database, which records severe weather events from 1950 to 2011. Measurements of number of fatalities and injuries was used to determine impact on population health, and the estimated cost of property and crop damage has been used to determine economic impact.
+Tornados have caused the most fatalities and injuries in the period from 1950 to November 2011. Heat has also been a significant cause of death and injury. Floods caused the most damage to property and crops during the same period.
 
-The research found that while acute weather events such as Tornados, Lightning, and Flash Floods were high in the [top ranked causes](#top10health), also significant were prolonged events such as heat waves.
-
-Tornados have caused the most fatalities and injuries in the period from 1950 to November 2011. Heat has also been a significant cause of death and injury.
-
-Floods caused the most damage to property and crops during the same period. The Napa Valley flood in 2006 had a particularly high cost (billions of dollars), which could be explained as a result of damage to vineyards and its impact on the wine industry. The [Results](#results) section lists the top event types with serious consequences for population health and the economy.
+The research uses data from the U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database, which records severe weather events. The [Results](#results) section presents the top event types by impact to population health and the economy.
 
 ## Tools Used
 
@@ -39,14 +35,14 @@ The raw data can be downloaded from the NOAA website as a compressed CSV file: "
 storm.data <- read.csv("data//repdata-data-StormData.csv.bz2", header=T, nrows=902298, stringsAsFactors=F)
 ```
 
-The file contains 902,297 observations of 37 variables.
+This file contains 902,297 observations of 37 variables.
 
 In particular, the following data has been used:
 * Number of fatalities (FATALITIES) and injuries (INJURIES) for each type of event (EVTYPE).
 * Estimated cost of damage to property (PROPDMG) and crops (CROPDMG) for each type of event.
-* LATITUDE and LONGITUDE of events. (This is not available for all event types, such as heat waves and floods, which occur over a larger area of land.)
+* LATITUDE and LONGITUDE of events. (This is not available for all event types, such as heat waves and floods, which occur over a larger geaographical area.)
 
-Event types included instances similar in meaning for the purposes of this analysis, and duplicates as a result of variation in spelling. For example, TORNADO is represented by TORNADOS, TORNADO F1, WATERSPOUT/TORNADOS, TORNDAO, etc. Significant categories of event types have been grouped together with the following code.
+Event types included instances similar in meaning for the purposes of this analysis, and duplicates as a result of variation in spelling. For example, TORNADO is represented by TORNADOS, TORNADO F1, WATERSPOUT/TORNADOS, TORNDAO, etc. Significant categories of event types have been grouped together based on the following rules.
 
 ```{r cache=TRUE}
 storm.data[grepl("torn", storm.data$EVTYPE, ignore.case=T), ]$EVTYPE <- "TORNADO"
@@ -60,7 +56,7 @@ storm.data[grepl("frost", storm.data$EVTYPE, ignore.case=T), ]$EVTYPE <- "FROST"
 storm.data$EVTYPE <- as.factor(storm.data$EVTYPE)
 ```
 
-A summary of the total number of fatalities and injuries, and a combined total, by event type is arranged by combined total in descending order.
+Measurements of number of fatalities and injuries was used to determine impact on population health, and the estimated cost of property and crop damage has been used to determine economic impact. The number of fatalities and injuries by event type is arranged by combined total in descending order for further analysis.
 
 ```{r cache=TRUE}
 summary.fatalities <- ddply(storm.data, .(EVTYPE), summarize, total.fatalities=sum(FATALITIES))
@@ -77,7 +73,7 @@ summary.total <- subset(summary.total, total > 0)
 by.total <- arrange(summary.total, desc(total))
 ```
 
-Estimated costs for property and crop damage are each stored in two columns. The first is the amount, and the second is the unit such as "K" for thousands of dollars, "M" for millions, etc. If the unit column is empty or contains an unknown value, then a unit of 1 has been assumed. The following code normalizes the costs. A summary of the total estimated cost of property and crop damage, and a combined total, by event type is arranged by combined total in descending order.
+Estimated costs for property and crop damage are each stored in two columns. The first is the amount, and the second is the unit such as "K" for thousands of dollars, "M" for millions, etc. If the unit column is empty or contains an unknown value, then a unit of 1 has been assumed. The following code normalizes the costs. The estimated cost of property and crop damage by event type is arranged by combined total in descending order.
 
 ```{r cache=TRUE}
 m <- c("H"=100, "K"=1000, "M"=1000000, "B"=1000000000, "N"=1)
@@ -99,21 +95,21 @@ by.total.cost <- arrange(damage.summary, desc(total.cost))
 
 ### Population health impact
 
-In the period 1950 to November, 2011, tornados caused the most fatalities and injuries.
+Tornados caused the most fatalities and injuries in the period 1950 to November, 2011.
 
-The top 10 event types impacting fatality and injury are:
+The top 10 event types impacting population health as measured by number of fatalities and injuries are shown below.
 
 ```{r top_10_health, cache=TRUE}
 top10 <- by.total[1:10, ]
 ggplot(top10, aes(total.fatalities, total.injuries)) +
   xlab("Number fatalities") +
   ylab("Number injuries") +
-  ggtitle("Impact of major events on population health, US 1950-2011") +
+  ggtitle("Impact of major events on US population health, 1950 - 2011") +
   geom_point() +
   geom_text(aes(label=EVTYPE), size=4, angle=45, hjust=0, vjust=0) +
   scale_x_log10() + scale_y_log10()
 ```
-- Axes are shown on a log[10] scale.
+**Axes are shown on a log10 scale.**
 
 <a name="top10health"></a>
 
@@ -121,7 +117,7 @@ ggplot(top10, aes(total.fatalities, total.injuries)) +
 kable(head(by.total, 10))
 ```
 
-Severe events such as tornados cause a great deal of damage over a short period of time and are very localized. Whereas events such as heat waves and strong wind cause more damage across a larger segment of the population. The plot below show the locality and area of impact of major event types in 2011 for which geographic data exists.
+Sudden events such as tornados cause a great deal of damage in a short period of time and can be quite localized. Whereas events such as heat waves and floods cause damage across a larger segment of the population. The plot below show the locality and area of impact of major event types in 2011 for which geographic data exists.
 
 ```{r us_health_events_2011, cache=TRUE, fig.width=9}
 health <- storm.data
@@ -137,25 +133,26 @@ us.top.6 <- us.2011[us.2011$EVTYPE %in% by.total$EVTYPE[1:12], ]
 ggplot(us.top.6, aes(LONGITUDE, LATITUDE, alpha=casualty.bracket, size=casualty.bracket)) +
   scale_x_reverse() +
   facet_wrap(~ EVTYPE, nrow=3, ncol=2) +
-  ggtitle("Locality and area of casualties from severe weather events for 2011") +
+  ggtitle("Locality and area of casualties from severe weather events in 2011") +
   geom_point(color="red")
 ```
 
-* This plot does not include non-localized events such as heat waves.
+*This plot does not include non-localized events such as heat waves.*
 
+As can be seen, tornados stand out by their magnitude at specific locations, where events such as hail and thunderstorms are more dispersed.
 
 ### Economic impact
 
-In the period 1950 to November, 2011, floods caused the most economic damage as measured by cost of damage to property and crops.
+Floods caused the most economic damage in the same period 1950 to November, 2011.
 
-The top 10 event types with respect to total economic cost are:
+The top 10 event types with respect to total economic cost are shown below.
 
 ```{r top_10_damage, message=FALSE}
 top10 <- by.total.cost[1:10, ]
 ggplot(top10, aes(reorder(EVTYPE, total.cost), total.cost)) +
   xlab("Event type") +
   ylab("Est.cost of property and crop damage ($B)") +
-  ggtitle("Top 10 Events by Economic Impact, 1950 - 2011") +
+  ggtitle("Top 10 Events by US Economic Impact, 1950 - 2011") +
   theme(axis.text.x=element_text(angle=90, hjust=1)) +
   coord_flip() +
   geom_bar(stat="identity", fill="steelblue")
@@ -164,3 +161,6 @@ ggplot(top10, aes(reorder(EVTYPE, total.cost), total.cost)) +
 ```{r cache=TRUE, results='asis'}
 kable(head(by.total.cost, 10))
 ```
+**Amounts shown in billions of dollars.**
+
+The Napa Valley flood in 2006 had a particularly high cost (billions of dollars), which could be explained as a result of damage to vineyards and its impact on the wine industry.
