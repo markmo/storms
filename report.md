@@ -112,28 +112,18 @@ by.total.cost <- arrange(damage.summary, desc(total.cost))
 ### Population health impact
 
 <a name="top10health"></a>
-The top 10 event types if we combine fatality and injury figures are:
+The top 10 event types impacting fatality and injury are:
 
 
 ```r
 top10 <- by.total[1:10, ]
-ggplot(top10, aes(reorder(EVTYPE, total), total)) + xlab("Event type") + ylab("Number fatalities/injuries") + 
-    theme(axis.text.x = element_text(angle = 90, hjust = 1)) + coord_flip() + 
-    geom_bar(stat = "identity")
-```
-
-![plot of chunk top_10_health](figure/top_10_health.png) 
-
-
-
-```r
 ggplot(top10, aes(total.fatalities, total.injuries)) + xlab("Number fatalities") + 
     ylab("Number injuries") + ggtitle("Impact of major events on population health, US 1950-2011") + 
     geom_point() + geom_text(aes(label = EVTYPE), size = 4, angle = 45, hjust = 0, 
     vjust = 0) + scale_x_log10() + scale_y_log10()
 ```
 
-![plot of chunk top_10_health2](figure/top_10_health2.png) 
+![plot of chunk top_10_health](figure/top_10_health.png) 
 
 - Axes are shown on a log[10] scale.
 
@@ -215,7 +205,8 @@ us.boundary <- subset(damage, LATITUDE < 4924 & LATITUDE > 2431 & LONGITUDE >
     6657 & LONGITUDE < 12446 & property.cost > 1e+05)
 us.boundary$cost.bracket <- cut(us.boundary$property.cost, breaks = 10)
 us.boundary$date <- strptime(as.character(us.boundary$BGN_DATE), "%m/%d/%Y %H:%M:%S")
-us.top.6 <- us.boundary[us.boundary$EVTYPE %in% by.total.cost$EVTYPE[1:5], ]
+us.top.6 <- us.boundary[us.boundary$EVTYPE %in% by.total.cost$EVTYPE[1:15], 
+    ]
 ggplot(us.top.6, aes(LONGITUDE, LATITUDE, alpha = cost.bracket, size = cost.bracket)) + 
     scale_x_reverse() + facet_wrap(~EVTYPE, nrow = 3, ncol = 2) + geom_point(color = "steelblue")
 ```

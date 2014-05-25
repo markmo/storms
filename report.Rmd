@@ -100,19 +100,10 @@ by.total.cost <- arrange(damage.summary, desc(total.cost))
 ### Population health impact
 
 <a name="top10health"></a>
-The top 10 event types if we combine fatality and injury figures are:
+The top 10 event types impacting fatality and injury are:
 
 ```{r top_10_health, message=FALSE}
 top10 <- by.total[1:10, ]
-ggplot(top10, aes(reorder(EVTYPE, total), total)) +
-  xlab("Event type") +
-  ylab("Number fatalities/injuries") +
-  theme(axis.text.x=element_text(angle=90, hjust=1)) +
-  coord_flip() +
-  geom_bar(stat="identity")
-```
-
-```{r top_10_health2, message=FALSE}
 ggplot(top10, aes(total.fatalities, total.injuries)) +
   xlab("Number fatalities") +
   ylab("Number injuries") +
@@ -174,7 +165,7 @@ The plot below show the locality and area of impact of major event types for whi
 us.boundary <- subset(damage, LATITUDE < 4924 & LATITUDE > 2431 & LONGITUDE > 6657 & LONGITUDE <  12446 & property.cost > 100000)
 us.boundary$cost.bracket <- cut(us.boundary$property.cost, breaks=10)
 us.boundary$date <- strptime(as.character(us.boundary$BGN_DATE), "%m/%d/%Y %H:%M:%S")
-us.top.6 <- us.boundary[us.boundary$EVTYPE %in% by.total.cost$EVTYPE[1:5], ]
+us.top.6 <- us.boundary[us.boundary$EVTYPE %in% by.total.cost$EVTYPE[1:15], ]
 ggplot(us.top.6, aes(LONGITUDE, LATITUDE, alpha=cost.bracket, size=cost.bracket)) +
   scale_x_reverse() +
   facet_wrap(~ EVTYPE, nrow=3, ncol=2) +
