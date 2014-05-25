@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RDataA
+cache/*
+data/*
+*.Rproj
+.DS_Store
+*.csv
+*.zip
+*.bz2
