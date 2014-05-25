@@ -1,6 +1,6 @@
 .Rproj.user
 .Rhistory
-.RDataA
+.RData
 cache/*
 data/*
 *.Rproj

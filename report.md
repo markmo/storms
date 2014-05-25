@@ -144,13 +144,13 @@ ggplot(top10, aes(total.fatalities, total.injuries)) + xlab("Number fatalities")
 |HURRICANE     |               135|            1328|   1463|
 
 
-Severe events such as tornados cause a great deal of damage over a short period of time and are very localized. Whereas events such as heat waves and strong wind cause more damage across a larger segment of the population. The plot below show the locality and area of impact of major event types for which geographic data exists.
+Severe events such as tornados cause a great deal of damage over a short period of time and are very localized. Whereas events such as heat waves and strong wind cause more damage across a larger segment of the population. The plot below show the locality and area of impact of major event types in 2011 for which geographic data exists.
 
 
 ```r
 health <- storm.data
 health$total <- health$FATALITIES + health$INJURIES
-health$harm.bracket <- cut(health$total, breaks = 10)
+health$casualty.bracket <- cut(health$total, breaks = 10)
 us.boundary <- subset(health, LATITUDE < 4924 & LATITUDE > 2431 & LONGITUDE > 
     6657 & LONGITUDE < 12446)
 us.boundary$date <- strptime(as.character(us.boundary$BGN_DATE), "%m/%d/%Y %H:%M:%S")
@@ -160,8 +160,9 @@ us.2011 <- us.boundary[format(us.boundary$date, "%Y") == "2011", ]
 # types do not have geo data points
 us.top.6 <- us.2011[us.2011$EVTYPE %in% by.total$EVTYPE[1:12], ]
 
-ggplot(us.top.6, aes(LONGITUDE, LATITUDE, alpha = harm.bracket, size = harm.bracket)) + 
-    scale_x_reverse() + facet_wrap(~EVTYPE, nrow = 3, ncol = 2) + geom_point(color = "red")
+ggplot(us.top.6, aes(LONGITUDE, LATITUDE, alpha = casualty.bracket, size = casualty.bracket)) + 
+    scale_x_reverse() + facet_wrap(~EVTYPE, nrow = 3, ncol = 2) + ggtitle("Locality and area of casualties from severe weather events for 2011") + 
+    geom_point(color = "red")
 ```
 
 ![plot of chunk us_health_events_2011](figure/us_health_events_2011.png) 
