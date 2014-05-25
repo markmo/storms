@@ -1,6 +1,6 @@
-# Analysis of the impact of severe weather events with respect to population health and the economy in the United States from 1950 to 2011.
+# Most harmful weather events with respect to US population health and the economy, 1950 to 2011.
 
-## 24 May 2014
+### 24 May 2014
 
 ## Synopsis
 
@@ -10,30 +10,30 @@ This research set out to answer:
 
 1. Which types of severe weather events have the greatest economic consequences in the US.
 
-The research used Storm Data from the National Weather Service, which records severe weather events from 1950 to 2011.
+The research used data from the U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database, which records severe weather events from 1950 to 2011. Measurements of number of fatalities and injuries was used to determine impact on population health, and the estimated cost of property and crop damage has been used to determine economic impact.
 
-Data on fatality and injury was used as a measure of impact to population health, and the cost of property and crop damage has been used as a measure of economic impact.
+The research found that while acute weather events such as Tornados, Lightning, and Flash Floods were high in the [top ranked causes](#top10health), also significant were prolonged events such as heat waves.
 
-The research found that while acute weather events such as Tornados, Lightning, and Flash Floods were high in the [list of top causes](#top10health), also significant were prolonged events such as heat waves.
+Tornados have caused the most fatalities and injuries in the period from 1950 to November 2011. Heat has also been a significant cause of death and injury.
 
-In the period from 1950 to November 2011, Tornados have caused the most fatalities and injuries. Heat is also a significant cause of death and injury, whereas water-related events such as flood and drought have a prominant impact to property and crops.
+Floods caused the most damage to property and crops during the same period. The Napa Valley flood in 2006 had a particularly high cost (billions of dollars), which could be explained as a result of damage to vineyards and its impact on the wine industry. The [Results](#results) section lists the top event types with serious consequences for population health and the economy.
 
-Floods were the most significant cause of damage to property and crops. The Napa Valley flood in 2006 had a particularly high cost (billions of dollars) probably as a result of the impact to high value vineyards and its impact on the wine industry.
+## Tools Used
 
-The [Results](#results) section lists the top event types impacting both population health and the economy.
-
-## Data Processing
-
-The data for this study is from  the U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database. This database tracks characteristics of major storms and weather events in the United States, including when and where they occur, as well as estimates of any fatalities, injuries, and property damage.
-
-The following R packages are used in this analysis.
+R version 3.1.0 (2014-04-10, "Spring Dance") and the following R packages were used in this analysis.
 
 ```{r}
 library(plyr)
 library(ggplot2)
 ```
 
-The raw data is downloaded from the NOAA website as a compressed CSV file: "repdata-data-StormData.csv.bz2". The following code reads the file. (The compressed file format is automatically unzipped.)
+Data processing procedures were run on a MacBook Pro, Intel Core i7 CPU with 16GB RAM and a solid state drive.
+
+## Data Processing
+
+The U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database tracks characteristics of major storms and weather events in the United States, including when and where they occur, as well as estimates of any fatalities, injuries, and property damage.
+
+The raw data can be downloaded from the NOAA website as a compressed CSV file: "repdata-data-StormData.csv.bz2". The following code reads the file. (The compressed file format is automatically unzipped.)
 
 ```{r source_data, cache=TRUE}
 storm.data <- read.csv("data//repdata-data-StormData.csv.bz2", header=T, nrows=902298, stringsAsFactors=F)
@@ -48,11 +48,11 @@ In particular, the following data has been used:
 
 Event types included instances similar in meaning for the purposes of this analysis, and duplicates as a result of variation in spelling. For example, TORNADO is represented by TORNADOS, TORNADO F1, WATERSPOUT/TORNADOS, TORNDAO, etc. Significant categories of event types have been grouped together with the following code.
 
-```{r}
+```{r cache=TRUE}
 storm.data[grepl("torn", storm.data$EVTYPE, ignore.case=T), ]$EVTYPE <- "TORNADO"
 storm.data[grepl("flood", storm.data$EVTYPE, ignore.case=T), ]$EVTYPE <- "FLOOD"
-storm.data[grepl("hurricane", storm.data$EVTYPE, ignore.case=T), ]$EVTYPE <- "HURRICANE"
-storm.data[grepl("(tstm|t\\w+orm|typhoon)", storm.data$EVTYPE, ignore.case=T), ]$EVTYPE <- "THUNDERSTORM"
+storm.data[grepl("(hurricane|typhoon)", storm.data$EVTYPE, ignore.case=T), ]$EVTYPE <- "HURRICANE"
+storm.data[grepl("(tstm|t\\w+orm)", storm.data$EVTYPE, ignore.case=T), ]$EVTYPE <- "THUNDERSTORM"
 storm.data[grepl("wind", storm.data$EVTYPE, ignore.case=T), ]$EVTYPE <- "WINDS"
 storm.data[grepl("heat", storm.data$EVTYPE, ignore.case=T), ]$EVTYPE <- "HEAT"
 storm.data[grepl("fire", storm.data$EVTYPE, ignore.case=T), ]$EVTYPE <- "FIRE"
@@ -103,7 +103,7 @@ In the period 1950 to November, 2011, tornados caused the most fatalities and in
 
 The top 10 event types impacting fatality and injury are:
 
-```{r top_10_health, message=FALSE}
+```{r top_10_health, cache=TRUE}
 top10 <- by.total[1:10, ]
 ggplot(top10, aes(total.fatalities, total.injuries)) +
   xlab("Number fatalities") +

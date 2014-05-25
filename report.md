@@ -1,6 +1,6 @@
-# Analysis of the impact of severe weather events with respect to population health and the economy in the United States from 1950 to 2011.
+# Most harmful weather events with respect to US population health and the economy, 1950 to 2011.
 
-## 24 May 2014
+### 24 May 2014
 
 ## Synopsis
 
@@ -10,23 +10,17 @@ This research set out to answer:
 
 1. Which types of severe weather events have the greatest economic consequences in the US.
 
-The research used Storm Data from the National Weather Service, which records severe weather events from 1950 to 2011.
+The research used data from the U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database, which records severe weather events from 1950 to 2011. Measurements of number of fatalities and injuries was used to determine impact on population health, and the estimated cost of property and crop damage has been used to determine economic impact.
 
-Data on fatality and injury was used as a measure of impact to population health, and the cost of property and crop damage has been used as a measure of economic impact.
+The research found that while acute weather events such as Tornados, Lightning, and Flash Floods were high in the [top ranked causes](#top10health), also significant were prolonged events such as heat waves.
 
-The research found that while acute weather events such as Tornados, Lightning, and Flash Floods were high in the [list of top causes](#top10health), also significant were prolonged events such as heat waves.
+Tornados have caused the most fatalities and injuries in the period from 1950 to November 2011. Heat has also been a significant cause of death and injury.
 
-In the period from 1950 to November 2011, Tornados have caused the most fatalities and injuries. Heat is also a significant cause of death and injury, whereas water-related events such as flood and drought have a prominant impact to property and crops.
+Floods caused the most damage to property and crops during the same period. The Napa Valley flood in 2006 had a particularly high cost (billions of dollars), which could be explained as a result of damage to vineyards and its impact on the wine industry. The [Results](#results) section lists the top event types with serious consequences for population health and the economy.
 
-Floods were the most significant cause of damage to property and crops. The Napa Valley flood in 2006 had a particularly high cost (billions of dollars) probably as a result of the impact to high value vineyards and its impact on the wine industry.
+## Tools Used
 
-The [Results](#results) section lists the top event types impacting both population health and the economy.
-
-## Data Processing
-
-The data for this study is from  the U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database. This database tracks characteristics of major storms and weather events in the United States, including when and where they occur, as well as estimates of any fatalities, injuries, and property damage.
-
-The following R packages are used in this analysis.
+R version 3.1.0 (2014-04-10, "Spring Dance") and the following R packages were used in this analysis.
 
 
 ```r
@@ -35,7 +29,13 @@ library(ggplot2)
 ```
 
 
-The raw data is downloaded from the NOAA website as a compressed CSV file: "repdata-data-StormData.csv.bz2". The following code reads the file. (The compressed file format is automatically unzipped.)
+Data processing procedures were run on a MacBook Pro, Intel Core i7 CPU with 16GB RAM and a solid state drive.
+
+## Data Processing
+
+The U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database tracks characteristics of major storms and weather events in the United States, including when and where they occur, as well as estimates of any fatalities, injuries, and property damage.
+
+The raw data can be downloaded from the NOAA website as a compressed CSV file: "repdata-data-StormData.csv.bz2". The following code reads the file. (The compressed file format is automatically unzipped.)
 
 
 ```r
@@ -57,9 +57,9 @@ Event types included instances similar in meaning for the purposes of this analy
 ```r
 storm.data[grepl("torn", storm.data$EVTYPE, ignore.case = T), ]$EVTYPE <- "TORNADO"
 storm.data[grepl("flood", storm.data$EVTYPE, ignore.case = T), ]$EVTYPE <- "FLOOD"
-storm.data[grepl("hurricane", storm.data$EVTYPE, ignore.case = T), ]$EVTYPE <- "HURRICANE"
-storm.data[grepl("(tstm|t\\w+orm|typhoon)", storm.data$EVTYPE, ignore.case = T), 
-    ]$EVTYPE <- "THUNDERSTORM"
+storm.data[grepl("(hurricane|typhoon)", storm.data$EVTYPE, ignore.case = T), 
+    ]$EVTYPE <- "HURRICANE"
+storm.data[grepl("(tstm|t\\w+orm)", storm.data$EVTYPE, ignore.case = T), ]$EVTYPE <- "THUNDERSTORM"
 storm.data[grepl("wind", storm.data$EVTYPE, ignore.case = T), ]$EVTYPE <- "WINDS"
 storm.data[grepl("heat", storm.data$EVTYPE, ignore.case = T), ]$EVTYPE <- "HEAT"
 storm.data[grepl("fire", storm.data$EVTYPE, ignore.case = T), ]$EVTYPE <- "FIRE"
@@ -139,14 +139,14 @@ kable(head(by.total, 10))
 |:-------------|-----------------:|---------------:|------:|
 |TORNADO       |              5661|           91407|  97068|
 |HEAT          |              3138|            9224|  12362|
-|THUNDERSTORM  |               731|            9549|  10280|
+|THUNDERSTORM  |               731|            9544|  10275|
 |FLOOD         |              1525|            8604|  10129|
 |LIGHTNING     |               816|            5230|   6046|
 |WINDS         |               695|            1994|   2689|
 |ICE STORM     |                89|            1975|   2064|
 |FIRE          |                90|            1608|   1698|
 |WINTER STORM  |               206|            1321|   1527|
-|HURRICANE     |               135|            1328|   1463|
+|HURRICANE     |               135|            1333|   1468|
 
 
 Severe events such as tornados cause a great deal of damage over a short period of time and are very localized. Whereas events such as heat waves and strong wind cause more damage across a larger segment of the population. The plot below show the locality and area of impact of major event types in 2011 for which geographic data exists.
@@ -202,12 +202,12 @@ kable(head(by.total.cost, 10))
 |EVTYPE          |  total.property|  total.crop|  total.cost|
 |:---------------|---------------:|-----------:|-----------:|
 |FLOOD           |          167.53|       12.38|      179.91|
-|HURRICANE       |           84.76|        5.52|       90.28|
+|HURRICANE       |           85.36|        5.52|       90.88|
 |TORNADO         |           58.59|        0.42|       59.01|
 |STORM SURGE     |           43.32|        0.00|       43.32|
 |HAIL            |           15.73|        3.03|       18.76|
 |DROUGHT         |            1.05|       13.97|       15.02|
-|THUNDERSTORM    |           11.58|        1.27|       12.85|
+|THUNDERSTORM    |           10.98|        1.27|       12.25|
 |ICE STORM       |            3.94|        5.02|        8.96|
 |FIRE            |            8.50|        0.40|        8.90|
 |TROPICAL STORM  |            7.70|        0.68|        8.38|
