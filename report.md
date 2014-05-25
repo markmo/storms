@@ -14,9 +14,11 @@ The research used Storm Data from the National Weather Service, which records se
 
 Data on fatality and injury was used as a measure of impact to population health, and the cost of property and crop damage has been used as a measure of economic impact.
 
-The research found that while severe weather events such as Tornados, Lightning, and Flash Floods were well represented in the [list of top causes](#top10health), also significant were events that occurred over a period of time such as heat waves.
+The research found that while acute weather events such as Tornados, Lightning, and Flash Floods were high in the [list of top causes](#top10health), also significant were events that occurred over a period of time such as heat waves.
 
-Top causes of fatality and injury and damage to the economy shared similar events. Tornados topped both lists by a significant margin. Heat waves in particular are a significant cause of death and injury, whereas water-related events such as flood and drought have a prominant impact to property and crops.
+In the period from 1950 to November 2011, Tornados have caused the most fatalities and injuries. Heat is also a significant cause of death and injury, whereas water-related events such as flood and drought have a prominant impact to property and crops.
+
+Floods were the most significant cause of damage to property and crops. The Napa Valley flood in 2006 had a particularly high cost (billions of dollars) probably as a result of the impact to high value vineyards and its impact on the wine industry.
 
 The [Results](#results) section lists the top event types impacting both population health and the economy.
 
@@ -109,6 +111,7 @@ by.total.cost <- arrange(damage.summary, desc(total.cost))
 
 ### Population health impact
 
+<a name="top10health"></a>
 The top 10 event types if we combine fatality and injury figures are:
 
 
@@ -121,6 +124,18 @@ ggplot(top10, aes(reorder(EVTYPE, total), total)) + xlab("Event type") + ylab("N
 
 ![plot of chunk top_10_health](figure/top_10_health.png) 
 
+
+
+```r
+ggplot(top10, aes(total.fatalities, total.injuries)) + xlab("Number fatalities") + 
+    ylab("Number injuries") + ggtitle("Impact of major events on population health, US 1950-2011") + 
+    geom_point() + geom_text(aes(label = EVTYPE), size = 4, angle = 45, hjust = 0, 
+    vjust = 0) + scale_x_log10() + scale_y_log10()
+```
+
+![plot of chunk top_10_health2](figure/top_10_health2.png) 
+
+- Axes are shown on a log[10] scale.
 
 |EVTYPE        |  total.fatalities|  total.injuries|  total|
 |:-------------|-----------------:|---------------:|------:|
@@ -136,26 +151,7 @@ ggplot(top10, aes(reorder(EVTYPE, total), total)) + xlab("Event type") + ylab("N
 |HURRICANE     |               135|            1328|   1463|
 
 
-<a name="top10health"></a>
-Furthermore, if we weight the harm to population health of a fatality, say by a factor of 10, then the top 10 event types are:
-
-
-```
-##          EVTYPE total.fatalities total.injuries total total.weighted
-## 1       TORNADO             5661          91407 97068         148017
-## 2          HEAT             3138           9224 12362          40604
-## 3         FLOOD             1525           8604 10129          23854
-## 4  THUNDERSTORM              731           9549 10280          16859
-## 5     LIGHTNING              816           5230  6046          13390
-## 6         WINDS              695           1994  2689           8944
-## 7   RIP CURRENT              368            232   600           3912
-## 8  WINTER STORM              206           1321  1527           3381
-## 9     ICE STORM               89           1975  2064           2865
-## 10    HURRICANE              135           1328  1463           2678
-```
-
-
-Severe events such as tornados cause a great deal of damage over a short period of time and are very localized. Whereas events such as strong wind cause more frequent damage across a larger segment of the population.
+Severe events such as tornados cause a great deal of damage over a short period of time and are very localized. Whereas events such as heat waves and strong wind cause more damage across a larger segment of the population.
 
 
 ```r
@@ -179,37 +175,6 @@ ggplot(us.top.6, aes(LONGITUDE, LATITUDE, alpha = harm.bracket, size = harm.brac
 
 
 * This plot does not include non-localized events such as heat waves.
-
-The top 10 event types by fatality are:
-
-|EVTYPE        |  total.fatalities|
-|:-------------|-----------------:|
-|TORNADO       |              5661|
-|HEAT          |              3138|
-|FLOOD         |              1525|
-|LIGHTNING     |               816|
-|THUNDERSTORM  |               731|
-|WINDS         |               695|
-|RIP CURRENT   |               368|
-|AVALANCHE     |               224|
-|WINTER STORM  |               206|
-|RIP CURRENTS  |               204|
-
-
-The top 10 event types by injury are:
-
-|EVTYPE        |  total.injuries|
-|:-------------|---------------:|
-|TORNADO       |           91407|
-|THUNDERSTORM  |            9549|
-|HEAT          |            9224|
-|FLOOD         |            8604|
-|LIGHTNING     |            5230|
-|WINDS         |            1994|
-|ICE STORM     |            1975|
-|FIRE          |            1608|
-|HAIL          |            1361|
-|HURRICANE     |            1328|
 
 
 ### Economic impact
@@ -242,7 +207,7 @@ ggplot(top10, aes(reorder(EVTYPE, total.cost), total.cost)) + xlab("Event type")
 |TROPICAL STORM  |            7.70|        0.68|        8.38|
 
 
-The plot below 
+The plot below show the locality and area of impact of major event types for which geographic data exists.
 
 
 ```r
@@ -250,14 +215,12 @@ us.boundary <- subset(damage, LATITUDE < 4924 & LATITUDE > 2431 & LONGITUDE >
     6657 & LONGITUDE < 12446 & property.cost > 1e+05)
 us.boundary$cost.bracket <- cut(us.boundary$property.cost, breaks = 10)
 us.boundary$date <- strptime(as.character(us.boundary$BGN_DATE), "%m/%d/%Y %H:%M:%S")
-us.top.6 <- us.boundary[us.boundary$EVTYPE %in% by.total$EVTYPE[1:6], ]
+us.top.6 <- us.boundary[us.boundary$EVTYPE %in% by.total.cost$EVTYPE[1:5], ]
 ggplot(us.top.6, aes(LONGITUDE, LATITUDE, alpha = cost.bracket, size = cost.bracket)) + 
-    scale_x_reverse() + facet_wrap(~EVTYPE, nrow = 2, ncol = 2) + geom_point(color = "steelblue")
+    scale_x_reverse() + facet_wrap(~EVTYPE, nrow = 3, ncol = 2) + geom_point(color = "steelblue")
 ```
 
-```
-## Error: nrow * ncol >= n is not TRUE
-```
+![plot of chunk damage_events](figure/damage_events.png) 
 
 
 * This plot does not include non-localized events such as droughts.
