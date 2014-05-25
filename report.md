@@ -14,7 +14,7 @@ The research used Storm Data from the National Weather Service, which records se
 
 Data on fatality and injury was used as a measure of impact to population health, and the cost of property and crop damage has been used as a measure of economic impact.
 
-The research found that while acute weather events such as Tornados, Lightning, and Flash Floods were high in the [list of top causes](#top10health), also significant were events that occurred over a period of time such as heat waves.
+The research found that while acute weather events such as Tornados, Lightning, and Flash Floods were high in the [list of top causes](#top10health), also significant were prolonged events such as heat waves.
 
 In the period from 1950 to November 2011, Tornados have caused the most fatalities and injuries. Heat is also a significant cause of death and injury, whereas water-related events such as flood and drought have a prominant impact to property and crops.
 
@@ -111,7 +111,8 @@ by.total.cost <- arrange(damage.summary, desc(total.cost))
 
 ### Population health impact
 
-<a name="top10health"></a>
+In the period 1950 to November, 2011, tornados caused the most fatalities and injuries.
+
 The top 10 event types impacting fatality and injury are:
 
 
@@ -127,6 +128,8 @@ ggplot(top10, aes(total.fatalities, total.injuries)) + xlab("Number fatalities")
 
 - Axes are shown on a log[10] scale.
 
+<a name="top10health"></a>
+
 |EVTYPE        |  total.fatalities|  total.injuries|  total|
 |:-------------|-----------------:|---------------:|------:|
 |TORNADO       |              5661|           91407|  97068|
@@ -141,7 +144,7 @@ ggplot(top10, aes(total.fatalities, total.injuries)) + xlab("Number fatalities")
 |HURRICANE     |               135|            1328|   1463|
 
 
-Severe events such as tornados cause a great deal of damage over a short period of time and are very localized. Whereas events such as heat waves and strong wind cause more damage across a larger segment of the population.
+Severe events such as tornados cause a great deal of damage over a short period of time and are very localized. Whereas events such as heat waves and strong wind cause more damage across a larger segment of the population. The plot below show the locality and area of impact of major event types for which geographic data exists.
 
 
 ```r
@@ -169,7 +172,9 @@ ggplot(us.top.6, aes(LONGITUDE, LATITUDE, alpha = harm.bracket, size = harm.brac
 
 ### Economic impact
 
-The top 10 event types wrt total economic cost are:
+In the period 1950 to November, 2011, floods caused the most economic damage as measured by cost of damage to property and crops.
+
+The top 10 event types with respect to total economic cost are:
 
 
 ```r
@@ -177,7 +182,7 @@ top10 <- by.total.cost[1:10, ]
 ggplot(top10, aes(reorder(EVTYPE, total.cost), total.cost)) + xlab("Event type") + 
     ylab("Est.cost of property and crop damage ($B)") + ggtitle("Top 10 Events by Economic Impact, 1950 - 2011") + 
     theme(axis.text.x = element_text(angle = 90, hjust = 1)) + coord_flip() + 
-    geom_bar(stat = "identity")
+    geom_bar(stat = "identity", fill = "steelblue")
 ```
 
 ![plot of chunk top_10_damage](figure/top_10_damage.png) 
@@ -196,22 +201,3 @@ ggplot(top10, aes(reorder(EVTYPE, total.cost), total.cost)) + xlab("Event type")
 |FIRE            |            8.50|        0.40|        8.90|
 |TROPICAL STORM  |            7.70|        0.68|        8.38|
 
-
-The plot below show the locality and area of impact of major event types for which geographic data exists.
-
-
-```r
-us.boundary <- subset(damage, LATITUDE < 4924 & LATITUDE > 2431 & LONGITUDE > 
-    6657 & LONGITUDE < 12446 & property.cost > 1e+05)
-us.boundary$cost.bracket <- cut(us.boundary$property.cost, breaks = 10)
-us.boundary$date <- strptime(as.character(us.boundary$BGN_DATE), "%m/%d/%Y %H:%M:%S")
-us.top.6 <- us.boundary[us.boundary$EVTYPE %in% by.total.cost$EVTYPE[1:15], 
-    ]
-ggplot(us.top.6, aes(LONGITUDE, LATITUDE, alpha = cost.bracket, size = cost.bracket)) + 
-    scale_x_reverse() + facet_wrap(~EVTYPE, nrow = 3, ncol = 2) + geom_point(color = "steelblue")
-```
-
-![plot of chunk damage_events](figure/damage_events.png) 
-
-
-* This plot does not include non-localized events such as droughts.
